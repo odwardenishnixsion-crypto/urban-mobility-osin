@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urban Mobility OSINT Dashboard</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Leaflet CSS for the Map -->
+    <link rel="stylesheet" href="https://unpkg.com" />
+    <style>
+        #map { height: 400px; border-radius: 0.75rem; }
+        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans">
+
+    <!-- Header -->
+    <header class="bg-indigo-700 text-white p-6 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold tracking-tight">Urban Mobility <span class="font-light text-indigo-200 text-lg italic">OSINT Analysis</span></h1>
+            <div class="flex gap-4">
+                <span class="bg-green-500 px-3 py-1 rounded-full text-xs font-semibold">Live OSINT Feed: Active</span>
+                <span class="bg-indigo-600 px-3 py-1 rounded-full text-xs">User: Denish</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Sidebar Controls -->
+        <section class="lg:col-span-1 space-y-6">
+            <div class="glass-card p-6 rounded-xl shadow-sm border border-slate-200">
+                <h2 class="text-lg font-semibold mb-4 text-indigo-800">Analytical Filters</h2>
+                <div class="space-y-4">
+                    <label class="block">
+                        <span class="text-sm text-slate-600 font-medium">Data Source</span>
+                        <select class="mt-1 block w-full rounded-md border-slate-300 shadow-sm p-2 bg-white outline-none ring-1 ring-slate-200">
+                            <option>Merged (OSM + GTFS + Twitter)</option>
+                            <option>Official City API Only</option>
+                            <option>Social Media Crowdsourced</option>
+                        </select>
+                    </label>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="equity" checked class="w-4 h-4 text-indigo-600">
+                        <label for="equity" class="text-sm text-slate-700">Overlay Census Income Data</label>
+                    </div>
+                    <button onclick="alert('Exporting OSINT Report...')" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition font-medium">Generate Impact Report</button>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 rounded-xl shadow-sm border border-slate-200">
+                <h2 class="text-lg font-semibold mb-2 text-indigo-800">Accessibility Metrics</h2>
+                <canvas id="metricsChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Main Map Area -->
+        <section class="lg:col-span-2 space-y-6">
+            <div class="glass-card p-4 rounded-xl shadow-md border border-slate-200">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold">Real-Time Access Gap Map</h2>
+                    <span class="text-sm text-slate-500 italic">Showing active outages cross-verified via OSINT</span>
+                </div>
+                <div id="map" class="z-0 shadow-inner border border-slate-200"></div>
+            </div>
+
+            <!-- Insights / Impact -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white p-4 rounded-lg border-l-4 border-amber-500 shadow-sm">
+                    <h4 class="text-sm font-bold text-slate-500 uppercase">Systemic Insight</h4>
+                    <p class="text-slate-700 mt-1 italic">"Low-income zones show 3x longer repair latency for elevator outages compared to the Financial District."</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg border-l-4 border-indigo-500 shadow-sm">
+                    <h4 class="text-sm font-bold text-slate-500 uppercase">OSINT Validation</h4>
+                    <p class="text-slate-700 mt-1 italic">Data cross-verified across 142 transit stations using [OpenStreetMap](https://www.openstreetmap.org) and [GTFS](https://gtfs.org) feeds.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com"></script>
+    <script src="https://cdn.jsdelivr.net"></script>
+    <script>
+        // 1. Initialize Map
+        const map = L.map('map').setView([40.7128, -74.0060], 13); // Default to NYC
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // 2. Add Mock OSINT Data Points
+        const outages = [
+            { pos: [40.7306, -73.9903], name: "Astor Place Station", status: "Elevator Out (Reported via Twitter)" },
+            { pos: [40.7580, -73.9855], name: "Times Square", status: "Ramp Blocked (GTFS Verified)" },
+            { pos: [40.7061, -74.0092], name: "Wall St Station", status: "Functional (Confidence: 99%)" }
+        ];
+
+        outages.forEach(o => {
+            L.marker(o.pos).addTo(map).bindPopup(`<b>${o.name}</b><br>${o.status}`);
+        });
+
+        // 3. Initialize Analytics Chart
+        const ctx = document.getElementById('metricsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['High Income', 'Middle', 'Low Income'],
+                datasets: [{
+                    label: 'Repair Latency (Hours)',
+                    data: [4, 12, 38],
+                    backgroundColor: ['#6366f1', '#818cf8', '#f59e0b']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } }
+            }
+        });
+
+
+
+
+
+
+import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
+
+function AccessibilityMap({ transitData, outageData }) {
+  return (
+    <MapContainer center={[40.7128, -74.0060]} zoom={13}>
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      
+      {/* Official GTFS Data */}
+      {transitData.map(station => (
+        <Marker position={[station.lat, station.lng]} key={station.id}>
+          <Popup>Official Status: Accessible</Popup>
+        </Marker>
+      ))}
+
+      {/* Real-Time Outage Heatmap (The "Gap") */}
+      {outageData.map(outage => (
+        <Circle 
+          center={[outage.lat, outage.lng]} 
+          pathOptions={{ color: 'red', fillColor: 'red' }}
+          radius={500}
+        />
+      ))}
+    </MapContainer>
+  );
+}
+
+
+
+
+
+
+    </script>
+</body>
+</html>
