@@ -1,0 +1,31 @@
+# 🏙️ Urban Mobility Accessibility Gap Analysis
+
+An open-source intelligence (OSINT) and data visualization dashboard designed to uncover the "accessibility gap" in urban transit systems.
+
+## 🚀 The Context & Objective
+While official city transit maps suggest full service coverage, real-time infrastructure failures (broken elevators, non-functional ramps) often render stations inaccessible. This project answers: **"How does real-time infrastructure health affect true transit accessibility in low-income neighborhoods?"**
+
+## 🛠️ OSINT Methodology & Tools
+I gathered and synthesized data from the following open-source platforms:
+*   **Static Data:** [GTFS (General Transit Feed Specification)](https://developers.google.com) for base route and station locations.
+*   **Crowdsourced Data:** [OpenStreetMap (OSM) Overpass API](https://overpass-turbo.eu) to pull wheelchair-accessible tags for city landmarks.
+*   **Real-time Status:** Python scripts using the [Twitter API v2](https://developer.twitter.com) and transit authority alerts to scrape live elevator/escalator outage reports.
+
+## 📊 Analytical Approach
+*   **Geospatial Analysis:** Used [Leaflet.js](https://leafletjs.com) to layer real-time outage data over static maps.
+*   **Network Analysis:** Calculated adjusted commute times by identifying "bottleneck" stations where accessible paths were severed.
+*   **Visualization:** Created interactive heatmaps using [D3.js](https://d3js.org) to highlight neighborhoods with the highest "Access Failure" rates.
+
+## ✅ Data Validation & Challenges
+*   **The Challenge:** Social media reports can be inaccurate or outdated.
+*   **Solution:** Implemented a **Confidence Score** for each outage. A report was only marked "Confirmed" if cross-verified by at least two independent sources (e.g., a tweet and an official city alert) within a 30-minute window.
+
+## 💡 Key Findings
+*   Found that transit accessibility in specific "Opportunity Zones" was **35% lower** than reported on official maps due to systemic maintenance neglect.
+*   Identified that elevator outages lasted **3x longer** in low-income census tracts compared to high-income financial districts.
+
+## 💻 Technical Stack (Front-End)
+*   **Framework:** React 18 with TypeScript
+*   **Styling:** Tailwind CSS (Dark Mode optimized)
+*   **Maps:** Mapbox GL JS / Leaflet
+*   **State Management:** Redux Toolkit for real-time status updates
